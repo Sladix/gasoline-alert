@@ -120,6 +120,7 @@ def main(postal_code=None, gas_type=None, time_sleep=None):
             if address not in last_known_state or last_known_state[address]["availability"] != availability:
                 if availability:
                     timestamp = record["fields"][f"{gas_type.lower()}_maj"]
+                    print_confidence_level(datetime.strptime(timestamp))
                     print(f"{timestamp} : ALERT : {gas_type} is available at {record['fields']['adresse']}, {record['fields']['cp']} {record['fields']['ville']}")
                     has_available = True
                 else:
