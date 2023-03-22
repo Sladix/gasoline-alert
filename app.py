@@ -34,7 +34,7 @@ def get_filename(file_prefix, gas_type):
 def load_last_known_state(filename):
     last_known_state = {}
     if os.path.exists(filename):
-        with open(filename, "r") as csvfile:
+        with open(filename, "r", encoding="utf-8") as csvfile:
             fieldnames = ["timestamp", "adresse", "availability"]
             reader = csv.DictReader(csvfile, fieldnames=fieldnames, delimiter=';', lineterminator='\n')
             for row in reader:
@@ -52,7 +52,7 @@ def play_wav_file(filename):
     wave_obj.play()
 
 def write_availability_to_file(filename, timestamp, adresse, availability):
-    with open(filename, "a") as csvfile:
+    with open(filename, "a", encoding="utf-8") as csvfile:
         fieldnames = ["timestamp", "adresse", "availability"]
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames, delimiter=";", lineterminator='\n')
         writer.writerow({"timestamp": timestamp, "adresse": adresse, "availability": availability})
@@ -111,7 +111,7 @@ def main(postal_code=None, gas_type=None, time_sleep=None):
             if address not in current_state and last_known_state[address]["availability"] != False:
                 timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
                 write_availability_to_file(filename, timestamp, address, False)
-                has_available = True
+                has_unavailable = True
                 changed_count += 1
 
         print(f"{changed_count} stations with changed availability.")
