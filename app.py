@@ -9,6 +9,8 @@ import simpleaudio as sa
 API_URL = "https://data.economie.gouv.fr/api/records/1.0/search/"
 DATASET = "prix-des-carburants-en-france-flux-instantane-v2"
 DATA_FOLDER = "data"
+BOLD = '\033[1m'
+RESET = '\033[0m'
 
 script_dir = os.path.dirname(os.path.abspath(__file__))
 yena_file = os.path.join(script_dir, "yena.wav")
@@ -56,6 +58,25 @@ def write_availability_to_file(filename, timestamp, adresse, availability):
         fieldnames = ["timestamp", "adresse", "availability"]
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames, delimiter=";", lineterminator='\n')
         writer.writerow({"timestamp": timestamp, "adresse": adresse, "availability": availability})
+
+def print_confidence_level(date):
+    now = datetime.now()
+    time_difference = now - date
+    
+    if time_difference.total_seconds() < 3600:
+        confidence = "Very confident (less than an hour)"
+        color = '\033[32m'
+    elif 3600 <= time_difference.total_seconds() < 7200:
+        confidence = "Confident (from 1 to 2 hours)"
+        color = '\033[34m'
+    elif 7200 <= time_difference.total_seconds() < 21600:
+        confidence = "Unsure (from 2 to 6 hours)"
+        color = '\033[33m'
+    else:
+        confidence = "Probably outdated (more than 6 hours)"
+        color = '\033[31m'
+    
+    print(f"{color}{BOLD}{confidence}{RESET}")
 
 def main(postal_code=None, gas_type=None, time_sleep=None):
     valid_gas_types = ["E10", "SP98", "SP95", "E85", "Gazole", "GPLc"]
@@ -114,7 +135,8 @@ def main(postal_code=None, gas_type=None, time_sleep=None):
                 has_unavailable = True
                 changed_count += 1
 
-        print(f"{changed_count} stations with changed availability.")
+        if changed_count > 0:
+            print(f"{changed_count} stations with changed availability.")
         if has_available:
             play_wav_file(yena_file)
         elif has_unavailable:
@@ -123,7 +145,7 @@ def main(postal_code=None, gas_type=None, time_sleep=None):
         last_known_state = {address: {"availability": availability} for address, availability in current_state.items()}
 
         if first_run and latest_station is not None:
-            print("The most recently updated available station on the first run:")
+            print_confidence_level(latest_update)
             print(f"{gas_type} is available at {latest_station['fields']['adresse']}, {latest_station['fields']['cp']} {latest_station['fields']['ville']} (Updated at: {latest_station['fields'][f'{gas_type.lower()}_maj']})")
 
         first_run = False
