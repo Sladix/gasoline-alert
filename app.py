@@ -43,7 +43,7 @@ def load_last_known_state(filename):
                     address = row["adresse"]
                     last_known_state[address] = {
                         "available": row["available"] == "True",
-                        "timestamp": row["timestamp"]
+                        "update_time": get_timestamp(row["timestamp"])
                     }
     return last_known_state
 
@@ -56,7 +56,7 @@ def write_availability_to_file(filename, timestamp, adresse, availability):
     with open(filename, "a", encoding="utf-8") as csvfile:
         fieldnames = ["timestamp", "adresse", "available"]
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames, delimiter=";", lineterminator='\n')
-        writer.writerow({"timestamp": timestamp, "adresse": adresse, "available": availability})
+        writer.writerow({"timestamp": timestamp.strftime("%Y-%m-%d %H:%M:%S"), "adresse": adresse, "available": availability})
 
 def print_confidence_level(date):
     now = datetime.now()
@@ -132,23 +132,31 @@ def main(postal_code=None, gas_type=None, time_sleep=None):
 
             address = record["fields"]["adresse"]
             availability = gas_available(record, gas_type)
+            update_time = get_timestamp(record["fields"][f"{gas_type.lower()}_maj"]) if availability else datetime.strptime(record['record_timestamp'], "%Y-%m-%dT%H:%M:%S.%fZ")
 
             if first_run and availability:
-                update_time = get_timestamp(record["fields"][f"{gas_type.lower()}_maj"])
                 if latest_update is None or update_time > latest_update:
                     latest_update = update_time
                     latest_station = record
 
-            current_state[address] = availability
+            current_state[address] = {"available": availability, "update_time": update_time}
 
-            if address not in last_known_state or current_state[address] != last_known_state[address]['available']:
-                write_availability_to_file(filename, update_time if availability else datetime.strptime(record['record_timestamp'], "%Y-%m-%dT%H:%M:%S.%fZ"), address, availability)
-                changed_count+= 1
+            should_write_to_file = False
+            if address not in last_known_state or availability != last_known_state[address]['available']:
+                should_write_to_file = True
+            elif availability and update_time > last_known_state[address]['update_time']:
+                should_write_to_file = True
+
+            if should_write_to_file:
+                write_availability_to_file(filename, update_time, address, availability)
+                changed_count += 1
                 if availability:
                     print_availability(record, gas_type)
                     has_available = True
                 else:
                     has_unavailable = True
+            
+            last_known_state[address] = {"available": availability, "update_time": update_time}
 
         if changed_count > 0:
             print(f"{changed_count} stations with changed availability.")
@@ -156,8 +164,6 @@ def main(postal_code=None, gas_type=None, time_sleep=None):
             play_wav_file(yena_file)
         elif has_unavailable:
             play_wav_file(yenapu_file)
-
-        last_known_state = {address: {"available": availability} for address, availability in current_state.items()}
 
         if first_run and latest_station is not None:
             print("--- BEST AVAILABILITY RIGHT NOW ---")
