@@ -1,6 +1,12 @@
 # Gas Availability Alert
 This script monitors gas stations in France and alerts you when the availability of a specific gas type changes. The script uses the API provided by the French government to retrieve the latest data on gas prices and availability.
 
+## TL;DR
+1. Turn up your volume
+2. Launch `app.py <gas_type> <postal_code>`
+3. Look at the currently best available gas station
+4. Wait to be notified for new updates
+
 ## Features
 - Monitors gas stations in a specific postal code or all stations in France (Up tp 1000 results, increase the count at your own risks)
 - Alerts when the availability of the specified gas type changes
