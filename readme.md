@@ -1,5 +1,5 @@
 # Gas Availability Alert
-This script monitors gas stations in France and alerts you when the availability of a specific gas type changes. The script uses the API provided by the French government to retrieve the latest data on gas prices and availability.
+This script monitors gas stations in France and alerts you when the availability of a specific gas type changes. The script uses [the API provided by the French government to retrieve the latest data on gas prices and availability](https://data.economie.gouv.fr/explore/dataset/prix-des-carburants-en-france-flux-instantane-v2/information).
 
 ## TL;DR
 1. Turn up your volume
