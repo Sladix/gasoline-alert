@@ -180,5 +180,5 @@ if __name__ == "__main__":
         sys.exit(1)
     GAS_TYPE = sys.argv[1]
     POSTAL_CODE = sys.argv[2] if len(sys.argv) > 2 else None
-    TIME_SLEEP = int(sys.argv[3]) if len(sys.argv) > 3 else 60*10 # Datase is updated every 10mn according to the doc
+    TIME_SLEEP = int(sys.argv[3]) if len(sys.argv) > 3 else 60*10 # Database is updated every 10mn according to the doc
     main(POSTAL_CODE, GAS_TYPE, TIME_SLEEP)
