@@ -13,9 +13,7 @@ This script monitors gas stations in France and alerts you when the availability
 - Stores the gas availability history in a CSV file
 - Optionally, set a custom time interval between checks
 ## Requirements
-- Python 3.x
-- requests library
-- simpleaudio library
+- [Python 3.x](https://www.python.org/downloads/)
 
 To install the required libraries, run:
 
