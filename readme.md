@@ -2,6 +2,8 @@
 This script monitors gas stations in France and alerts you when the availability of a specific gas type changes. The script uses [the API provided by the French government to retrieve the latest data on gas prices and availability](https://data.economie.gouv.fr/explore/dataset/prix-des-carburants-en-france-flux-instantane-v2/information).
 
 ## TL;DR
+1. Install [Python 3.x](https://www.python.org/downloads/)
+1. open a terminal, run `pip install requests simpleaudio`
 1. Turn up your volume
 2. Launch `app.py <gas_type> <postal_code>`
 3. Look at the currently best available gas station
@@ -10,7 +12,7 @@ This script monitors gas stations in France and alerts you when the availability
 ## Features
 - Monitors gas stations in a specific postal code or all stations in France (Up tp 1000 results, increase the count at your own risks)
 - Alerts when the availability of the specified gas type changes
-- Stores the gas availability history in a CSV file
+- Stores the gas availability history in a CSV file (for later analysis/visualization)
 - Optionally, set a custom time interval between checks
 ## Requirements
 - [Python 3.x](https://www.python.org/downloads/)
@@ -26,8 +28,15 @@ To run the script, use the following command:
 ```
 python app.py <gas_type> <postal_code> <interval>
 ```
-`<gas_type>`: The type of gas you want to monitor. Choose from E10, SP98, SP95, E85, Gazole, or GPLc.
-
+`<gas_type>`: The type of gas you want to monitor.
+| Gas types |
+| ----------|
+| GPLc |
+| E85 |
+| SP95 |
+| SP98 |
+| E10 |
+| Gazole |
 `<postal_code>`: (Optional) The postal code of the area you want to monitor. If not provided, the script will monitor all gas stations in France (first 1000 results). Note that you must input the exact postal code, it won't work with regional ones (44300 will work but 44000 won't)
 
 `<interval>`: (Optional) The time interval (in seconds) between checks. The default and minimal value is 60 seconds (The API is updated with 1mn interval at most).
